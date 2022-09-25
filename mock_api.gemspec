@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 require_relative "lib/mock_api/version"
 
 Gem::Specification.new do |spec|
@@ -17,6 +15,5 @@ Gem::Specification.new do |spec|
   spec.files = Dir.glob("lib/**/*")
   spec.require_paths = ["lib"]
 
-  # Uncomment to register a new dependency of your gem
-  # spec.add_dependency "example-gem", "~> 1.0"
+  spec.add_dependency "sinatra", "~> 2.2.2"
 end
