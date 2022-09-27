@@ -1,6 +1,6 @@
 # MockApi
 
-MockApi simplifies building mock APIs with Sinatra in tests and during development.
+MockApi simplifies building mock APIs with Sinatra for tests and development.
 
 ## Installation
 
@@ -29,9 +29,9 @@ class MessageApi < Sinatra::Base
   include MockApi
 
   mock do
-    # Intercept requests from this base url.
+    # Intercept requests to this url and route them to this api.
     url 'example.com'
-    # Configure an in-memory store for entities managed by this api.
+    # Configure in-memory store(s) for entities managed by this api.
     store :messages
   end
 
@@ -45,7 +45,7 @@ end
 Then use it in your tests:
 
 ```ruby
-class MockApiTest < ActionDispatch::IntegrationTest
+class MessageApiTest < ActionDispatch::IntegrationTest
   # Includes a before hook that initializes request mocking, and an after hook
   # that resets the state of the in-memory store.
   include MessageApi.hooks
@@ -62,9 +62,31 @@ class MockApiTest < ActionDispatch::IntegrationTest
 end
 ```
 
-## Runner
+## Test Usage
 
-TBD
+The simplest way to use a mock API in tests is to include the `hooks` module. This will setup your mock API to intercept requests before each test and reset the in-memory store after each test.
+
+```ruby
+class MockApiTest < ActionDispatch::IntegrationTest
+  include MessageApi.hooks
+  # ...
+end
+```
+
+For finger-grained control, the mock api can also be manually started and reset:
+
+```ruby
+class MockApiTest < ActionDispatch::IntegrationTest
+  setup do
+    MessageApi.run
+  end
+  
+  teardown do
+    MessageApi.reset
+  end
+end
+```
+> Calling `reset` is not necessary if your api does not have an in-memory store
 
 ## Store
 
