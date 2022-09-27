@@ -67,8 +67,9 @@ end
 The simplest way to use a mock API in tests is to include the `hooks` module. This will setup your mock API to intercept requests before each test and reset the in-memory store after each test.
 
 ```ruby
-class MockApiTest < ActionDispatch::IntegrationTest
+class MessageApiTest < ActionDispatch::IntegrationTest
   include MessageApi.hooks
+  
   # ...
 end
 ```
@@ -76,7 +77,7 @@ end
 For finger-grained control, the mock api can also be manually started and reset:
 
 ```ruby
-class MockApiTest < ActionDispatch::IntegrationTest
+class MessageApiTest < ActionDispatch::IntegrationTest
   setup do
     MessageApi.run
   end
@@ -84,6 +85,8 @@ class MockApiTest < ActionDispatch::IntegrationTest
   teardown do
     MessageApi.reset
   end
+  
+  # ...
 end
 ```
 > Calling `reset` is not necessary if your api does not have an in-memory store
