@@ -46,8 +46,8 @@ Then use it in your tests:
 
 ```ruby
 class MessageApiTest < ActionDispatch::IntegrationTest
-  # Includes a before hook that initializes request mocking, and an after hook
-  # that resets the state of the in-memory store.
+  # Includes before + after hooks to initialize request mocking
+  # and reset the state of any in-memory stores.
   include MessageApi.hooks
 
   test 'fetches message from the API' do
