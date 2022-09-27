@@ -1,13 +1,15 @@
-require "faraday"
-require "sinatra/json"
-require "test_helper"
+require 'sinatra/base'
+require 'sinatra/json'
+require 'faraday'
+require 'test_helper'
 
-class ExampleApi
+class ExampleApi < Sinatra::Base
   include MockApi
 
-  entities :messages
-
-  root 'example.com'
+  mock do
+    url 'example.com'
+    store :messages
+  end
 
   post '/messages' do
     body = JSON.parse(request.body.read)
@@ -24,11 +26,11 @@ end
 
 class MockApiTest < Minitest::Test
   def setup
-    stub_request(:any, ExampleApi.url).to_rack(ExampleApi.server)
+    ExampleApi.run
   end
 
   def teardown
-    ExampleApi.store.reset
+    ExampleApi.reset
   end
 
   def test_creates_and_reads_article

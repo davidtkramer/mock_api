@@ -1,86 +1,47 @@
-require 'sinatra/base'
-require_relative "mock_api/version"
+require_relative 'mock_api/version'
+require_relative 'mock_api/runner'
+require_relative 'mock_api/store'
 
 module MockApi
   def self.included(klass)
     klass.extend(ClassMethods)
     class << klass
-      attr_accessor :store, :server, :url
+      attr_accessor :runner, :store
     end
-    klass.server = Class.new(Sinatra::Base)
   end
 
   module ClassMethods
-    def entities(*entity_types)
-      raise 'entities have already been defined' unless store.nil?
-      self.store = EntityStore.new(entity_types)
-      store = self.store
-      entity_types.each do |entity_type|
-        define_singleton_method(entity_type) { store[entity_type] }
-        server.define_method(entity_type) { store[entity_type] }
-      end
-    end
-
-    def root(url)
-      self.url = Regexp.new(url)
-    end
-
-    def get(*args, &block)
-      server.get(*args, &block)
-    end
-
-    def post(*args, &block)
-      server.post(*args, &block)
-    end
-
-    def put(*args, &block)
-      server.put(*args, &block)
-    end
-
-    def delete(*args, &block)
-      server.delete(*args, &block)
+    def mock(&block)
+      definition = MockDefinition.new
+      definition.instance_exec(&block)
+      self.store = Store.new(*definition.entity_types) unless definition.entity_types.nil?
+      self.runner = Runner.new(url: definition._url, server: self, store: store)
+      extend(store.mixin)
+      include(store.mixin)
     end
 
     def hooks
-      url = self.url
-      server = self.server
-      store = self.store
-      Module.new do
-        define_singleton_method :included do |klass|
-          klass.class_eval do
-            setup { stub_request(:any, url).to_rack(server) }
-            teardown { store.reset }
-          end
-        end
-      end
-    end
-  end
-
-  class EntityStore
-    def initialize(entity_types)
-      @store = {}
-      entity_types.each do |entity_type|
-        @store[entity_type] = EntityRepo.new([])
-      end
-    end
-
-    def add(entity_type, entity)
-      @store[entity_type].add(entity)
-    end
-
-    def [](entity_type)
-      @store[entity_type]
+      runner.hooks
     end
 
     def reset
-      @store.transform_values! { EntityRepo.new([]) }
+      runner.reset
     end
-  end
 
-  class EntityRepo < SimpleDelegator
-    def add(entity)
-      push(entity)
-      entity
+    def run(url = nil)
+      url.nil? ? runner.run : runner.run(url)
+    end
+
+    class MockDefinition
+      attr_reader :_url, :entity_types
+
+      def url(url)
+        @_url = url
+      end
+
+      def store(*entity_types)
+        @entity_types = entity_types
+      end
     end
   end
 end
