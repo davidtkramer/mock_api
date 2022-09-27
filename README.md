@@ -1,6 +1,6 @@
 # MockApi
 
-MockApi simplifies building mock APIs with Sinatra for tests and development.
+MockApi simplifies building mock APIs with WebMock and Sinatra for tests and development.
 
 ## Installation
 
@@ -8,6 +8,7 @@ Add these lines to your application's Gemfile:
 
 ```ruby
 gem 'mock_api'
+gem 'webmock'
 gem 'sinatra'
 # sinatra-contrib is optional, but contains useful helpers for json APIs
 gem 'sinatra-contrib'
@@ -19,12 +20,20 @@ And then run:
 
 ## Quick Start
 
+Setup dependencies:
+
+```ruby
+# test/test_helper.rb
+require 'webmock/minitest' # If using rspec, require 'webmock/rspec' instead 
+require 'sinatra/base'
+require 'sinatra/json'
+require 'mock_api'
+```
+
 Create an api with Sinatra and include the `MockApi` module:
 
 ```ruby
-require 'sinatra/base'
-require 'sinatra/json'
-
+# test/mock_apis/message_api.rb
 class MessageApi < Sinatra::Base
   include MockApi
 
@@ -46,8 +55,8 @@ Then use it in your tests:
 
 ```ruby
 class MessageApiTest < ActionDispatch::IntegrationTest
-  # Includes before + after hooks to initialize request mocking
-  # and reset the state of any in-memory stores.
+  # Includes hooks to initialize request mocking before each test
+  # and reset the state of any in-memory stores after each test.
   include MessageApi.hooks
 
   test 'fetches message from the API' do
@@ -67,6 +76,7 @@ end
 The simplest way to use a mock API in tests is to include the `hooks` module. This will setup your mock API to intercept requests before each test and reset the in-memory store after each test.
 
 ```ruby
+# message_api_test.rb
 class MessageApiTest < ActionDispatch::IntegrationTest
   include MessageApi.hooks
   
@@ -74,7 +84,7 @@ class MessageApiTest < ActionDispatch::IntegrationTest
 end
 ```
 
-For finger-grained control, the mock api can also be manually started and reset:
+If you prefer to setup the hooks yourself or need finger-grained control, the mock api can be manually started and reset:
 
 ```ruby
 class MessageApiTest < ActionDispatch::IntegrationTest
@@ -89,7 +99,7 @@ class MessageApiTest < ActionDispatch::IntegrationTest
   # ...
 end
 ```
-> Calling `reset` is not necessary if your api does not have an in-memory store
+> Calling `reset` after each test is not necessary if your api does not have any in-memory stores
 
 ## Store
 
