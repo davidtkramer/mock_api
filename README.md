@@ -148,15 +148,15 @@ class ContactsControllerTest < ActionDispatch::IntegrationTest
 
   test 'fetches contact with provided ID' do
     # Add a contact to the in-memory contact store.
-    message = ContactApi.messages.add({ id: '123', text: 'hello' })
+    contact = ContactApi.contacts.add({ id: '123', text: 'hello' })
     
     # Verify our api can fetch the contact from the external service.
-    get "/contacts/#{message[:id]}"
+    get "/contacts/#{contact[:id]}"
     
     assert_response 200
     body = JSON.parse(response.body)
-    assert_equal message[:id], body['id']
-    assert_equal message[:text], body['text']
+    assert_equal contact[:id], body['id']
+    assert_equal contact[:text], body['text']
   end
   
   test 'returns 404 if contact is not found' do
