@@ -38,7 +38,7 @@ class MockApiTest < Minitest::Test
     response = Faraday.post('http://example.com/messages', params.to_json)
     body = JSON.parse(response.body)
 
-    assert_equal 1, ExampleApi.messages.lengthq
+    assert_equal 1, ExampleApi.messages.length
     message = ExampleApi.messages.first
     assert_equal body['id'], message[:id]
     assert_equal body['text'], message[:text]
