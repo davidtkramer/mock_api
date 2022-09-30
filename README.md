@@ -33,20 +33,17 @@ require 'mock_api'
 Create an api with Sinatra and include the `MockApi` module:
 
 ```ruby
-# test/mock_apis/message_api.rb
-class MessageApi < Sinatra::Base
+# test/mock_apis/contact_api.rb
+class ContactApi < Sinatra::Base
   include MockApi
 
   mock do
     # Intercept requests to this url and route them to this api.
     url 'example.com'
-    # Configure in-memory store(s) for entities managed by this api.
-    store :messages
   end
 
-  get '/messages/:id' do
-    message = messages.find { |m| m[:id] == params[:id] }
-    message.nil ? status 404 : json message
+  get '/contacts/:id' do
+    json({ id: params[:id], name: 'Bob' })
   end
 end
 ```
@@ -54,31 +51,28 @@ end
 Then use it in your tests:
 
 ```ruby
-class MessageApiTest < ActionDispatch::IntegrationTest
+class ContactApiTest < ActionDispatch::IntegrationTest
   # Include hooks to initialize request mocking before each test
-  include MessageApi.hooks
+  include ContactApi.hooks
 
-  test 'fetches message from the API' do
-    # Add a message to the in-memory message store.
-    message = MessageApi.messages.add({ id: '123', text: 'hello' })
-    
-    # Verify that we can fetch the message from the api.
-    response = Faraday.get("http://example.com/messages/#{message[:id]}")
+  test 'fetches contact from the API' do
+    # Verify that we can fetch the contact from the api.
+    response = Faraday.get('http://example.com/contacts/123')
     body = JSON.parse(response.body)
     
-    assert_equal message[:id], body['id']
-    assert_equal message[:text], body['text']
+    assert_equal '123', body['id']
+    assert_equal 'Bob', body['name']
   end
 end
 ```
 
-## Test Usage
+## Test Setup
 
 The simplest way to use a mock API in a test suite is to include the `hooks` module. This will setup your mock API to intercept requests before each test and reset the in-memory store after each test.
 
 ```ruby
-class MessageApiTest < ActionDispatch::IntegrationTest
-  include MessageApi.hooks
+class ContactApiTest < ActionDispatch::IntegrationTest
+  include ContactApi.hooks
   
   # ...
 end
@@ -87,13 +81,13 @@ end
 If you prefer to setup the hooks yourself or need finger-grained control, the mock api can be manually started and reset:
 
 ```ruby
-class MessageApiTest < ActionDispatch::IntegrationTest
+class ContactApiTest < ActionDispatch::IntegrationTest
   setup do
-    MessageApi.run
+    ContactApi.run
   end
   
   teardown do
-    MessageApi.reset
+    ContactApi.reset
   end
   
   # ...
@@ -101,9 +95,79 @@ end
 ```
 > Calling `reset` after each test is not necessary if your api does not have any in-memory stores
 
-## Store
+## Dynamic Responses
 
 In many cases, your mock api can just return hard-coded responses or fixture data. If you need more flexibility, the `MockApi` module provides a store interface to help you manage dynamic responses.
+
+For example, imagine you're building an API endpoint that fetches a contact from an external service managed by another team. We want to test these scenarios:
+
+- If a contact with the provided ID exists in the external service, our endpoint responds with that contact
+- If a contact with the provided ID is not found in the external service, our endpoint responds with a 404
+
+Let's refactor the mock API from the Quick Start section to be dynamic:
+
+```ruby
+class ContactApi < Sinatra::Base
+  include MockApi
+
+  mock do
+    url 'example.com'
+    # Configure one or more in-memory stores for entities managed by this api.
+    store :contacts
+  end
+
+  get '/contacts/:id' do
+    # We now have a contacts method that returns an array of contact hashes that we can search 
+    contact = contacts.find { |m| m[:id] == params[:id] }
+    contact.nil ? status 404 : json contact
+  end
+end
+```
+
+The controller for our endpoint:
+
+```ruby
+class ContactsController < ApplicationController
+  def show
+    response = Faraday.get("http://example.com/contacts/#{params[:id]}")
+    if response.status == 404
+      head 404
+    else
+      contact = JSON.parse(response.body)
+      render json: contact  
+    end
+  end
+end
+```
+
+Now, in our test we can verify our endpoint handles both scenarios:
+
+```ruby
+class ContactApiTest < ActionDispatch::IntegrationTest
+  include ContactApi.hooks
+
+  test 'fetches contact with provided ID' do
+    # Add a contact to the in-memory contact store.
+    message = ContactApi.messages.add({ id: '123', text: 'hello' })
+    
+    # Verify our api can fetch the contact from the external service.
+    get "my_api/contacts/#{message[:id]}"
+    
+    assert_response 200
+    body = JSON.parse(response.body)
+    assert_equal message[:id], body['id']
+    assert_equal message[:text], body['text']
+  end
+  
+  test 'returns 404 if contact is not found' do
+    # In this test, we add nothing to the contact store, so our mock api
+    # endpoint should return a 404. In turn, our endpoint should 404 as well.
+    get 'my_api/contacts/123'
+
+    assert_response 404
+  end
+end
+```
 
 ## Usage with FactoryBot
 
