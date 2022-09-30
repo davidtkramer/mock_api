@@ -2,7 +2,6 @@ PATH
   remote: .
   specs:
     mock_api (0.2.0)
-      sinatra (~> 2.2.2)
 
 GEM
   remote: https://rubygems.org/
@@ -74,6 +73,7 @@ DEPENDENCIES
   mock_api!
   rake (~> 13.0)
   rubocop (~> 1.7)
+  sinatra (~> 2.2.2)
   sinatra-contrib
   webmock (~> 3.18)
 

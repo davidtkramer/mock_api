@@ -15,5 +15,11 @@ Gem::Specification.new do |spec|
   spec.files = Dir.glob("lib/**/*")
   spec.require_paths = ["lib"]
 
-  spec.add_dependency "sinatra", "~> 2.2.2" # TODO: change to dev dep
+  spec.add_development_dependency "rake", "~> 13.0"
+  spec.add_development_dependency "minitest", "~> 5.0"
+  spec.add_development_dependency "rubocop", "~> 1.7"
+  spec.add_development_dependency "webmock", "~> 3.18"
+  spec.add_development_dependency "faraday"
+  spec.add_development_dependency "sinatra", "~> 2.2.2"
+  spec.add_development_dependency "sinatra-contrib"
 end
