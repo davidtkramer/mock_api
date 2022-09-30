@@ -95,6 +95,46 @@ end
 ```
 > Calling `reset` after each test is not necessary if your api does not have any in-memory stores
 
+## Development Setup
+
+The same mock APIs used in your tests can be also be used in development. Example setup for Rails:
+
+```ruby
+# config/initializers/mock_api.rb
+if Rails.env.development?
+  require_relative '../../test/mock_apis/contact_api'
+  
+  WebMock.enable!
+  # If you're not mocking all requests in your app, then we need to tell
+  # webmock to still allow real http requests. 
+  WebMock.allow_net_connect!
+  ContactApi.run
+end
+```
+
+Any changes to your mock APIs will require restarting the development server. To autoload changes, place your mock API classes in a directory that's in the Rails `autoload_paths` config. The simplest approach is to create a `mock_apis` directory underneath `app`, and then Rails will automatically autoload all of your mock APIs. Then, setup your intializer like so:
+
+```ruby
+# config/initializers/mock_api.rb
+if Rails.env.development?
+  WebMock.enable!
+  WebMock.allow_net_connect!
+
+  Rails.application.reloader.to_prepare do
+    ContactApi.run
+  end
+end
+```
+
+>  The state of any stores in your mock API will be reset whenever an autoload occurs
+
+If you only want to mock a certain namespace or a specific endpoint in development, you can provide a url to the `run` method. This url will override the default url specified in the mock api class.
+
+```ruby
+# only mock requests to the /contacts namespace
+ContactApi.run('http://example.com/contacts')
+```
+
 ## Dynamic Responses
 
 In many cases, your mock api can just return hard-coded responses or fixture data. If you need more flexibility, the `MockApi` module provides a store interface to help you manage dynamic responses.
