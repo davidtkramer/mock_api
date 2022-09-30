@@ -2,6 +2,12 @@
 
 MockApi simplifies building mock APIs with WebMock and Sinatra for tests and development.
 
+⚡ **Speed up development** - Stop waiting on upstream services to ship changes. Mock the service and develop in parallel.
+
+🏕️ **Go offline** - Develop your app, no internet required.
+
+🏭 **FactoryBot integration** - Setup test data for external services just like your ActiveRecord models
+
 ## Installation
 
 Add these lines to your application's Gemfile:
@@ -210,6 +216,10 @@ class ContactsControllerTest < ActionDispatch::IntegrationTest
   end
 end
 ```
+
+## Usage with FactoryBot
+
+TODO
 
 ## Development
 
