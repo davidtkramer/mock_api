@@ -38,8 +38,8 @@ module MockApi
               raise "Unable to initialize MockApi setup hook in #{klass}"
             end
 
-            if klass.method_defined?(:before_teardown)
-              klass.define_method(:before_teardown) do # minitest
+            if klass.method_defined?(:before_teardown) # minitest
+              klass.define_method(:before_teardown) do
                 super()
                 this.reset
               end
