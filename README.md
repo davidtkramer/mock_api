@@ -133,7 +133,8 @@ class ContactApi < Sinatra::Base
   end
 
   get '/contacts/:id' do
-    # We now have a contacts method that returns an array of contacts that we can search 
+    # We now have a contacts method that returns the contact store. The store is just a thin
+    # wrapper around an array, so we can use any standard ruby array methods to search it.
     contact = contacts.find { |c| c[:id] == params[:id] }
     contact.nil ? status 404 : json contact
   end
