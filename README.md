@@ -108,6 +108,7 @@ if Rails.env.development?
   # If you're not mocking all requests in your app, then we need to tell
   # webmock to still allow real http requests. 
   WebMock.allow_net_connect!
+  # Start mocking the contact API
   ContactApi.run
 end
 ```
