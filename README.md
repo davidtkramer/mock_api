@@ -134,7 +134,7 @@ class ContactApi < Sinatra::Base
 
   get '/contacts/:id' do
     # We now have a contacts method that returns an array of contacts that we can search 
-    contact = contacts.find { |m| m[:id] == params[:id] }
+    contact = contacts.find { |c| c[:id] == params[:id] }
     contact.nil ? status 404 : json contact
   end
 end
