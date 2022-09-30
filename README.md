@@ -68,7 +68,7 @@ end
 
 ## Test Setup
 
-The simplest way to use a mock API in a test suite is to include the `hooks` module. This will setup your mock API to intercept requests before each test and reset the in-memory store after each test.
+The simplest way to use a mock API in a test suite is to include the `hooks` module. This will setup your mock API to intercept requests before each test and reset any in-memory [stores](#dynamic-responses) after each test.
 
 ```ruby
 class ContactApiTest < ActionDispatch::IntegrationTest
