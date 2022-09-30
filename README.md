@@ -99,32 +99,7 @@ end
 
 In many cases, your mock api can just return hard-coded responses or fixture data. If you need more flexibility, the `MockApi` module provides a store interface to help you manage dynamic responses.
 
-For example, imagine you're building an API endpoint that fetches a contact from an external service managed by another team. We want to test these scenarios:
-
-- If a contact with the provided ID exists in the external service, our endpoint responds with that contact
-- If a contact with the provided ID is not found in the external service, our endpoint responds with a 404
-
-Let's refactor the mock API from the Quick Start section to be dynamic:
-
-```ruby
-class ContactApi < Sinatra::Base
-  include MockApi
-
-  mock do
-    url 'example.com'
-    # Configure one or more in-memory stores for entities managed by this api.
-    store :contacts
-  end
-
-  get '/contacts/:id' do
-    # We now have a contacts method that returns an array of contact hashes that we can search 
-    contact = contacts.find { |m| m[:id] == params[:id] }
-    contact.nil ? status 404 : json contact
-  end
-end
-```
-
-The controller for our endpoint:
+For example, imagine we're building an API endpoint that fetches a contact from an external service managed by another team. 
 
 ```ruby
 class ContactsController < ApplicationController
@@ -140,10 +115,35 @@ class ContactsController < ApplicationController
 end
 ```
 
+We want to test these scenarios:
+
+- If a contact with the provided ID exists in the external service, our endpoint responds with that contact
+- If a contact with the provided ID is not found in the external service, our endpoint responds with a 404
+
+To support this, let's refactor the mock API from the [Quick Start](#quick-start) section to be dynamic:
+
+```ruby
+class ContactApi < Sinatra::Base
+  include MockApi
+
+  mock do
+    url 'example.com'
+    # Configure one or more in-memory stores for entities managed by this api.
+    store :contacts
+  end
+
+  get '/contacts/:id' do
+    # We now have a contacts method that returns an array of contacts that we can search 
+    contact = contacts.find { |m| m[:id] == params[:id] }
+    contact.nil ? status 404 : json contact
+  end
+end
+```
+
 Now, in our test we can verify our endpoint handles both scenarios:
 
 ```ruby
-class ContactApiTest < ActionDispatch::IntegrationTest
+class ContactsControllerTest < ActionDispatch::IntegrationTest
   include ContactApi.hooks
 
   test 'fetches contact with provided ID' do
@@ -151,7 +151,7 @@ class ContactApiTest < ActionDispatch::IntegrationTest
     message = ContactApi.messages.add({ id: '123', text: 'hello' })
     
     # Verify our api can fetch the contact from the external service.
-    get "my_api/contacts/#{message[:id]}"
+    get "/contacts/#{message[:id]}"
     
     assert_response 200
     body = JSON.parse(response.body)
@@ -162,7 +162,7 @@ class ContactApiTest < ActionDispatch::IntegrationTest
   test 'returns 404 if contact is not found' do
     # In this test, we add nothing to the contact store, so our mock api
     # endpoint should return a 404. In turn, our endpoint should 404 as well.
-    get 'my_api/contacts/123'
+    get '/contacts/123'
 
     assert_response 404
   end
