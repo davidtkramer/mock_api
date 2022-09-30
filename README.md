@@ -127,12 +127,12 @@ if Rails.env.development?
 end
 ```
 
->  The state of any stores in your mock API will be reset whenever an autoload occurs
+>  Be aware that the state of any stores in your mock API will be reset whenever an autoload occurs
 
 If you only want to mock a certain namespace or a specific endpoint in development, you can provide a url to the `run` method. This url will override the default url specified in the mock api class.
 
 ```ruby
-# only mock requests to the /contacts namespace
+# only mock requests to the /contacts namespace instead of every request to example.com
 ContactApi.run('http://example.com/contacts')
 ```
 
