@@ -113,7 +113,7 @@ if Rails.env.development?
 end
 ```
 
-Any changes to your mock APIs will require restarting the development server. To autoload changes, place your mock API classes in a directory that's in the Rails `autoload_paths` config. The simplest approach is to create a `mock_apis` directory underneath `app`, and then Rails will automatically autoload all of your mock APIs. Then, setup your intializer like so:
+Any changes to your mock APIs will require restarting the development server unless the mocks reside in a directory in the Rails `autoload_paths` config. The simplest approach is to place the mocks in a `mock_apis` directory underneath `app`, and then Rails will automatically autoload them. Then, setup your initializer like so:
 
 ```ruby
 # config/initializers/mock_api.rb
