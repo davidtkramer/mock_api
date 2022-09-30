@@ -8,7 +8,12 @@ module MockApi
     end
 
     def run(url = @url)
-      WebMock.stub_request(:any, url).to_rack(@server)
+      if defined?(::WebMock)
+        WebMock.stub_request(:any, url).to_rack(@server)
+      else
+        raise 'MockApi requires WebMock to be installed. ' \
+          'Check out the setup guide at https://github.com/davidtkramer/mock_api#quick-start.'
+      end
     end
 
     def reset
@@ -20,8 +25,17 @@ module MockApi
       Module.new do
         define_singleton_method :included do |klass|
           klass.class_eval do
-            setup { this.run }
-            teardown { this.reset }
+            if respond_to?(:setup)
+              setup { this.run } # rails integration test
+            elsif respond_to?(:before)
+              before { this.run } # rspec + minitest/spec
+            end
+
+            if respond_to?(:teardown)
+              teardown { this.reset } # rails integration test
+            elsif respond_to?(:after)
+              after { this.reset } # rspec + minitest/spec
+            end
           end
         end
       end

@@ -45,7 +45,7 @@ class MessageApi < Sinatra::Base
   end
 
   get '/messages/:id' do
-    message = messages.find { |a| a[:id] == params[:id] }
+    message = messages.find { |m| m[:id] == params[:id] }
     message.nil ? status 404 : json message
   end
 end
@@ -55,16 +55,17 @@ Then use it in your tests:
 
 ```ruby
 class MessageApiTest < ActionDispatch::IntegrationTest
-  # Includes hooks to initialize request mocking before each test
-  # and reset the state of any in-memory stores after each test.
+  # Include hooks to initialize request mocking before each test
   include MessageApi.hooks
 
   test 'fetches message from the API' do
     # Add a message to the in-memory message store.
     message = MessageApi.messages.add({ id: '123', text: 'hello' })
+    
     # Verify that we can fetch the message from the api.
     response = Faraday.get("http://example.com/messages/#{message[:id]}")
     body = JSON.parse(response.body)
+    
     assert_equal message[:id], body['id']
     assert_equal message[:text], body['text']
   end
@@ -73,10 +74,9 @@ end
 
 ## Test Usage
 
-The simplest way to use a mock API in tests is to include the `hooks` module. This will setup your mock API to intercept requests before each test and reset the in-memory store after each test.
+The simplest way to use a mock API in a test suite is to include the `hooks` module. This will setup your mock API to intercept requests before each test and reset the in-memory store after each test.
 
 ```ruby
-# message_api_test.rb
 class MessageApiTest < ActionDispatch::IntegrationTest
   include MessageApi.hooks
   
@@ -103,11 +103,7 @@ end
 
 ## Store
 
-TBD
-
-## Manual Setup
-
-TBD
+In many cases, your mock api can just return hard-coded responses or fixture data. If you need more flexibility, the `MockApi` module provides a store interface to help you manage dynamic responses.
 
 ## Usage with FactoryBot
 

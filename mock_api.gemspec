@@ -15,5 +15,5 @@ Gem::Specification.new do |spec|
   spec.files = Dir.glob("lib/**/*")
   spec.require_paths = ["lib"]
 
-  spec.add_dependency "sinatra", "~> 2.2.2"
+  spec.add_dependency "sinatra", "~> 2.2.2" # TODO: change to dev dep
 end
