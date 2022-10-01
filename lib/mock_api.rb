@@ -1,6 +1,6 @@
 require_relative 'mock_api/version'
 require_relative 'mock_api/runner'
-require_relative 'mock_api/store'
+require_relative 'mock_api/store_registry'
 
 module MockApi
   def self.included(klass)
@@ -14,10 +14,13 @@ module MockApi
     def mock(&block)
       definition = MockDefinition.new
       definition.instance_exec(&block)
-      self.store = Store.new(*definition.entity_types) unless definition.entity_types.nil?
+      store = nil
+      unless definition.entity_types.nil?
+        store = MockApi::StoreRegistry.instance.find_or_create(name, definition.entity_types)
+        extend(store.mixin)
+        include(store.mixin)
+      end
       self.runner = Runner.new(url: definition._url, server: self, store: store)
-      extend(store.mixin)
-      include(store.mixin)
     end
 
     def hooks

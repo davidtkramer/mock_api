@@ -4,6 +4,13 @@ require 'example_api'
 class MockApiTest < Minitest::Test
   def setup
     ExampleApi.run
+    # WebMock.globally_stub_request do |request|
+    #   if request.uri.to_s =~ /example\.com/
+    #     rack_response = WebMock::RackResponse.new(ExampleApi)
+    #     response = rack_response.evaluate(request)
+    #     { status: response.status, body: response.body, headers: response.headers }
+    #   end
+    # end
   end
 
   def teardown
