@@ -1,6 +1,6 @@
 # MockApi
 
-MockApi simplifies building mock APIs with WebMock and Sinatra for tests and development.
+MockApi simplifies service mocking with WebMock and Sinatra, for both tests and development.
 
 ⚡ **Speed up development** - No waiting on upstream services to ship. Mock the service and develop in parallel.
 
@@ -119,7 +119,7 @@ if Rails.env.development?
 end
 ```
 
-Any changes to your mock APIs will require restarting the development server unless the mocks reside in a directory in the Rails `autoload_paths` config. The simplest approach is to place the mocks in a `mock_apis` directory underneath `app`, and then Rails will automatically autoload them. Then, setup your initializer like so:
+Any changes to your mock APIs will require restarting the development server unless the mocks reside in a directory in the Rails `autoload_paths` config. The simplest way to autoload is to put mocks in a `mock_apis` directory underneath `app`, and then Rails will automatically autoload them. Then, setup your initializer like so:
 
 ```ruby
 # config/initializers/mock_api.rb
@@ -133,8 +133,6 @@ if Rails.env.development?
 end
 ```
 
->  Be aware that the state of any stores in your mock API will be reset whenever an autoload occurs
-
 If you only want to mock a certain namespace or a specific endpoint in development, you can provide a url to the `run` method. This url will override the default url specified in the mock api class.
 
 ```ruby
@@ -144,7 +142,7 @@ ContactApi.run('http://example.com/contacts')
 
 ## Dynamic Responses
 
-In many cases, your mock api can just return hard-coded responses or fixture data. If you need more flexibility, the `MockApi` module provides a store interface to help you manage dynamic responses.
+In many cases, your mock api can just return hard-coded responses or fixture data. If you need more flexibility, the `MockApi` module provides a store interface to help you manage dynamic responses. This is especially useful when running mocks in development, since your mock API can maintain state and behave like a real service.
 
 For example, imagine we're building an API endpoint that fetches a contact from an external service managed by another team. 
 
