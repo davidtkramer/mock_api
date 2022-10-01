@@ -16,7 +16,7 @@ module MockApi
       definition.instance_exec(&block)
       store = nil
       unless definition.entity_types.nil?
-        store = MockApi::StoreRegistry.instance.find_or_create(name, definition.entity_types)
+        store = StoreRegistry.instance.find_or_create(name, definition.entity_types)
         extend(store.mixin)
         include(store.mixin)
       end

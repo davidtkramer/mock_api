@@ -9,17 +9,6 @@ class ExampleApi < Sinatra::Base
     store :messages
   end
 
-  # do not show sinatra html error output
-  # set :show_exceptions, false
-  # set :raise_errors, false
-  #
-  # error do
-  #   content_type :json
-  #   status 500
-  #   error = env['sinatra.error']
-  #   { :result => 'error', :message => error.message }.to_json
-  # end
-
   post '/messages' do
     body = JSON.parse(request.body.read)
     message = messages.add({ id: SecureRandom.uuid, text: body['text'] })
