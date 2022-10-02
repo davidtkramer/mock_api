@@ -3,7 +3,7 @@ require 'example_api'
 
 Hooks = { before_called: false, after_called: false }
 
-class MinitestTestTest < Minitest::Test
+class MinitestTestHooksTest < Minitest::Test
   # We need these tests to execute in order so we can test that the user-defined
   # after hook is called correctly and test that the store is reset.
   i_suck_and_my_tests_are_order_dependent!

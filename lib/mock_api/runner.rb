@@ -21,7 +21,7 @@ module MockApi
     end
 
     def hooks
-      raise "hooks method needs 'mock_api/minitest' or 'mock_api/rspec' to be required"
+      raise "MockApi hooks method needs 'mock_api/minitest' or 'mock_api/rspec' to be required"
     end
   end
 end

@@ -24,11 +24,11 @@ class ApiTwo < Sinatra::Base
   end
 end
 
-class MultipleApiTest < Minitest::Test
+describe 'Multiple API Test' do
   include ApiOne.hooks
   include ApiTwo.hooks
 
-  def test_multiple_apis_can_be_mocked_in_one_test
+  it 'can mock multiple APIs in one test' do
     Faraday.get('http://one.com/resource')
     Faraday.get('http://two.com/resource')
   end

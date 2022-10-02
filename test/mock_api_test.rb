@@ -1,16 +1,16 @@
 require 'test_helper'
 require 'example_api'
 
-class MockApiTest < Minitest::Test
-  def setup
+describe MockApi do
+  before do
     ExampleApi.run
   end
 
-  def teardown
+  after do
     ExampleApi.reset
   end
 
-  def test_creates_and_reads_article
+  it 'creates and reads article' do
     params = { text: 'hello' }
     response = Faraday.post('http://example.com/messages', params.to_json)
     body = JSON.parse(response.body)
