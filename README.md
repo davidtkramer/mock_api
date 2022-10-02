@@ -30,9 +30,9 @@ Setup dependencies:
 ```ruby
 # test/test_helper.rb
 require 'webmock/minitest' # or 'webmock/rspec'
+require 'mock_api/minitest' # or 'mock_api/rspec'
 require 'sinatra/base'
 require 'sinatra/json' # optional - contains helpers for json APIs
-require 'mock_api'
 ```
 
 Create an api with Sinatra and include the `MockApi` module:
