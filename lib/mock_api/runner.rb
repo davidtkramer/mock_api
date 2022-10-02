@@ -25,26 +25,22 @@ module MockApi
       Module.new do
         define_singleton_method :included do |klass|
           klass.class_eval do
-            if klass.method_defined?(:before_setup) # minitest
-              klass.define_method(:before_setup) do
+            if method_defined?(:before_setup) # minitest
+              define_method(:before_setup) do
                 super()
                 this.run
               end
-            elsif respond_to?(:setup) # rails
-              setup { this.run }
             elsif respond_to?(:before) # rspec
               before { this.run }
             else
               raise "Unable to initialize MockApi setup hook in #{klass}"
             end
 
-            if klass.method_defined?(:before_teardown) # minitest
-              klass.define_method(:before_teardown) do
+            if method_defined?(:before_teardown) # minitest
+              define_method(:before_teardown) do
                 super()
                 this.reset
               end
-            elsif respond_to?(:teardown) # rails
-              teardown { this.reset }
             elsif respond_to?(:after) # rspec
               after { this.reset }
             else

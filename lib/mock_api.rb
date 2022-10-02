@@ -6,7 +6,7 @@ module MockApi
   def self.included(klass)
     klass.extend(ClassMethods)
     class << klass
-      attr_accessor :runner, :store
+      attr_accessor :runner
     end
   end
 
@@ -16,7 +16,7 @@ module MockApi
       definition.instance_exec(&block)
       store = nil
       unless definition.entity_types.nil?
-        store = StoreRegistry.instance.find_or_create(name, definition.entity_types)
+        store = StoreRegistry.find_or_create(name, definition.entity_types)
         extend(store.mixin)
         include(store.mixin)
       end
