@@ -8,7 +8,7 @@ module MockApi
 
     self.stores = {}
 
-    def self.find_or_create(name, entity_types)
+    def self.register(name, entity_types)
       return stores[name] if stores.key?(name)
       stores[name] = Store.new(*entity_types)
     end
