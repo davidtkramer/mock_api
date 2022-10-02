@@ -1,6 +1,3 @@
-require 'sinatra/base'
-require 'sinatra/json'
-
 class ExampleApi < Sinatra::Base
   include MockApi
 
