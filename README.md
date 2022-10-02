@@ -16,8 +16,7 @@ Add these lines to your application's Gemfile:
 gem 'mock_api'
 gem 'webmock'
 gem 'sinatra'
-# sinatra-contrib is optional, but contains useful helpers for json APIs
-gem 'sinatra-contrib'
+gem 'sinatra-contrib' # optional - contains helpers for json APIs
 ```
 
 And then run:
@@ -30,9 +29,9 @@ Setup dependencies:
 
 ```ruby
 # test/test_helper.rb
-require 'webmock/minitest' # If using rspec, require 'webmock/rspec' instead 
+require 'webmock/minitest' # or 'webmock/rspec'
 require 'sinatra/base'
-require 'sinatra/json'
+require 'sinatra/json' # optional - contains helpers for json APIs
 require 'mock_api'
 ```
 
