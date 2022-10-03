@@ -1,7 +1,8 @@
-require_relative 'mock_api/version'
-require_relative 'mock_api/mock_definition'
-require_relative 'mock_api/runner'
-require_relative 'mock_api/store_registry'
+require 'mock_api/version'
+require 'mock_api/mock_definition'
+require 'mock_api/runner'
+require 'mock_api/store_registry'
+require 'mock_api/railtie' if defined?(Rails::Railtie)
 
 module MockApi
   def self.included(klass)
