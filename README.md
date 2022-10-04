@@ -102,7 +102,7 @@ end
 
 ## Development Setup
 
-The same mock APIs used in your tests can be also be used in development. Example setup for rails:
+The same mock APIs used in your tests can be also be used in development. For Rails apps, create a `mock_api.rb` file in `config/initializers` and then add this code:
 
 ```ruby
 # config/initializers/mock_api.rb
