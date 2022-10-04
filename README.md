@@ -56,7 +56,7 @@ end
 Then use it in your tests:
 
 ```ruby
-class ContactApiTest < ActionDispatch::IntegrationTest
+class ContactApiTest < ActiveSupport::TestCase
   # Include hooks to initialize request mocking before each test
   include ContactApi.hooks
 
@@ -76,7 +76,7 @@ end
 The simplest way to use a mock API in a test suite is to include the `hooks` module. This will setup your mock API to intercept requests before each test and reset any in-memory [stores](#dynamic-responses) after each test.
 
 ```ruby
-class ContactApiTest < ActionDispatch::IntegrationTest
+class ContactApiTest < ActiveSupport::TestCase
   include ContactApi.hooks
   
   # ...
@@ -86,7 +86,7 @@ end
 If you prefer to setup the hooks yourself or need finger-grained control, the mock api can be manually started and reset:
 
 ```ruby
-class ContactApiTest < ActionDispatch::IntegrationTest
+class ContactApiTest < ActiveSupport::TestCase
   setup do
     ContactApi.run
   end
