@@ -38,7 +38,7 @@ require 'sinatra/json'      # optional - contains helpers for json APIs
 Create an api with Sinatra and include the `MockApi` module:
 
 ```ruby
-# test/mock_apis/contact_api.rb
+# test/api_mocks/contact_api.rb
 class ContactApi < Sinatra::Base
   include MockApi
 
@@ -102,35 +102,31 @@ end
 
 ## Development Setup
 
-The same mock APIs used in your tests can be also be used in development. Example setup for Rails:
+The same mock APIs used in your tests can be also be used in development. Example setup for rails:
 
 ```ruby
 # config/initializers/mock_api.rb
 if Rails.env.development?
-  require_relative '../../test/mock_apis/contact_api'
-  
   WebMock.enable!
   # If you're not mocking all requests in your app, then we need to tell
   # webmock to still allow real http requests. 
   WebMock.allow_net_connect!
-  # Start mocking the contact API
-  ContactApi.run
-end
-```
-
-Any changes to your mock APIs will require restarting the development server unless the mocks reside in a directory in the Rails `autoload_paths` config. The simplest way to autoload is to put mocks in a `mock_apis` directory underneath `app`, and then Rails will automatically autoload them. Then, setup your initializer like so:
-
-```ruby
-# config/initializers/mock_api.rb
-if Rails.env.development?
-  WebMock.enable!
-  WebMock.allow_net_connect!
 
   Rails.application.reloader.to_prepare do
+    WebMock.reset!
+    # Run your mock api 
     ContactApi.run
+  end
+
+  Rails.configuration.after_initialize do
+    # This block runs once on boot, so you can setup any initial data
+    # for your mock APIs here
+    ContactApi.contacts.add({ id: '123', text: 'hello' })
   end
 end
 ```
+
+Mocks that reside in a `test/api_mocks` or `spec/api_mocks` directory will be automatically autoloaded on boot and reloaded when changes are made in development. If your mocks reside elsewhere, you'll need to manually add them to the Rails `autoload_paths` config or manually require them in your initializer file.
 
 If you only want to mock a certain namespace or a specific endpoint in development, you can provide a url to the `run` method. This url will override the default url specified in the mock api class.
 
