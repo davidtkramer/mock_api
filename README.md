@@ -98,7 +98,7 @@ class ContactApiTest < ActiveSupport::TestCase
   # ...
 end
 ```
-> Calling `reset` after each test is not necessary if your api does not have any in-memory stores
+> Calling `reset` after each test is unnecessary if your api does not have any in-memory stores
 
 ## Development Setup
 
@@ -121,7 +121,7 @@ if Rails.env.development?
   Rails.configuration.after_initialize do
     # This block runs once on boot, so you can setup any initial data
     # for your mock APIs here
-    ContactApi.contacts.add({ id: '123', text: 'hello' })
+    ContactApi.contacts.add({ id: '123', name: 'Bob' })
   end
 end
 ```
@@ -210,9 +210,33 @@ class ContactsControllerTest < ActionDispatch::IntegrationTest
 end
 ```
 
-## Usage with FactoryBot
+## FactoryBot Integration
 
-TODO
+MockApi integrates easily with FactoryBot with a few simple customizations. With this approach, you can setup test data for services just like your ActiveRecord models.
+
+```ruby
+FactoryBot.define do
+  factory :contact, class: Hash do
+    sequence(:id) { |id| id.to_s }
+    name { 'Bob' }
+
+    # just return the hash of compiled attributes, no need initialize an object
+    initialize_with { attributes }
+    # add the contact hash to the mock API in-memory store
+    to_create { |contact| ContactApi.contacts.add(contact) }
+  end
+end
+```
+
+Now use the factory in your tests:
+
+```ruby
+test 'fetching a contact' do
+  contact = create(:contact)
+  Faraday.get("http://example.com/contacts/#{contact[:id]}")
+  # ...
+end
+```
 
 ## Development
 
