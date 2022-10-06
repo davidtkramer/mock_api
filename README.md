@@ -2,7 +2,9 @@
 
 MockApi simplifies service mocking with WebMock and Sinatra, for both tests and development.
 
-⚡ **Speed up development** - No waiting on upstream services to ship. Mock the service and develop in parallel.
+⚡ **Speed up development** - Mock upstream services and develop new integrations in parallel.
+
+🧹 **Clean up tests** - Mock services once and re-use them across your test suite.
 
 🏕️ **Go offline** - Develop your app, no internet required.
 
