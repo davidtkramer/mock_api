@@ -8,7 +8,7 @@ MockApi simplifies service mocking with WebMock and Sinatra, for both tests and 
 
 🏕️ **Go offline** - Develop your app, no internet required.
 
-🏭 **FactoryBot integration** - Setup test data for external services just like your ActiveRecord models
+🏭 **FactoryBot integration** - Setup test data for external services just like your ActiveRecord models.
 
 ## Installation
 
