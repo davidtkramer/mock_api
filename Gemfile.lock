@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    mock_api (0.4.0)
+    mock_api (0.4.1)
 
 GEM
   remote: https://rubygems.org/
@@ -65,6 +65,7 @@ GEM
       hashdiff (>= 0.4.0, < 2.0.0)
 
 PLATFORMS
+  arm64-darwin-22
   x86_64-darwin-20
 
 DEPENDENCIES
