@@ -7,8 +7,13 @@ module MockApi
       Module.new do
         define_singleton_method :included do |klass|
           klass.class_eval do
-            before { runner.run }
-            after { runner.reset }
+            before do
+              runner.reset
+              runner.run
+            end
+            after do
+              runner.reset
+            end
           end
         end
       end

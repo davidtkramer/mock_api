@@ -6,6 +6,7 @@ module MockApi
       runner = self
       Module.new do
         define_method :before_setup do
+          runner.reset
           runner.run
           super()
         end
